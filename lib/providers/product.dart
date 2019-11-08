@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Product with ChangeNotifier {
   final String id;
@@ -18,7 +19,12 @@ class Product with ChangeNotifier {
   });
 
   void toggleFavoriteStatus() {
+    final oldStatus = isFavorite;
+
     isFavorite = !isFavorite;
     notifyListeners();
+
+    const url = '';
+    http.patch(url);
   }
 }
