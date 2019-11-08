@@ -8,18 +8,50 @@ import '../widgets/app_drawer.dart';
 class OrdersScreen extends StatelessWidget {
   static const routeName = '/orders';
 
+  // @override
+  // void initState() {
+  // Future.delayed(Duration.zero).then((_) async {
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+  //   await Provider.of<Orders>(context, listen: false).fetchAndSetOrders();
+  //   setState(() {
+  //     _isLoading = false;
+  //   });
+  // });
+  //   super.initState();
+  // }
+
   @override
   Widget build(BuildContext context) {
-    final orderData = Provider.of<Orders>(context);
+    // final orderData = Provider.of<Orders>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Your Orders'),
       ),
       drawer: AppDrawer(),
-      body: ListView.builder(
-        itemCount: orderData.orders.length,
-        itemBuilder: (ctx, index) {
-          return OrderItem(orderData.orders[index]);
+      body: FutureBuilder(
+        future: Provider.of<Orders>(context, listen: false).fetchAndSetOrders(),
+        builder: (ctx, dataSnapshot) {
+          if (dataSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            if (dataSnapshot.error != null) {
+              return Center(
+                child: Text('An error occurred'),
+              );
+            }
+            return Consumer<Orders>(
+              builder: (ctx, orderData, child) => ListView.builder(
+                itemCount: orderData.orders.length,
+                itemBuilder: (ctx, index) {
+                  return OrderItem(orderData.orders[index]);
+                },
+              ),
+            );
+          }
         },
       ),
     );
